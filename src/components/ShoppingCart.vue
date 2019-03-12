@@ -1,31 +1,37 @@
 <template>
   <div>
-    <h1>Shopping Cart</h1>
-    <ul>
+    <h1>Product List</h1>
+    <img
+      v-if="loading"
+      src="https://i.imgur.com/JfPpwOA.gif"
+    >
+    <ul v-else>
       <li v-for="product in products">
-        {{ product.title }} - {{ product.price | currency }} - {{ product.quantity }}
+        {{product.title}} - {{product.price | currency}} - {{product.inventory}}
+        <button
+          :disabled="!productIsInStock(product)"
+          @click="addProductToCart(product)"
+        >Add to cart</button>
       </li>
     </ul>
-    <p>Total: {{ total | currency }}</p>
-    <button @click="$store.dispatch('checkout')">
-      Checkout
-    </button>
-    <p v-if="$store.state.checkoutStatus">
-      {{ $store.state.checkoutStatus }}
-    </p>
   </div>
 </template>
 
 <script>
+import { mapState, mapGetters, mapActions } from 'vuex';
+
 export default {
-  name: 'ShoppingCart',
   computed: {
-    products() {
-      return this.$store.getters.cartProducts;
-    },
-    total() {
-      return this.$store.getters.cartTotal;
-    },
+    ...mapGetters({
+      products: 'cartProducts',
+      total: 'cartTotal',
+    }),
+    ...mapState({
+      checkoutStatus: state => state.cart.checkoutStatus,
+    }),
+  },
+  methods: {
+    ...mapActions(['checkout']),
   },
 };
 </script>

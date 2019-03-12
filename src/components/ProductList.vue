@@ -5,35 +5,44 @@
       v-if="loading"
       src="https://i.imgur.com/JfPpwOA.gif">
     <ul v-else>
-      <li v-for="product in products">
+      <li v-for="product in items">
         {{ product.title }} - {{ product.price | currency }} - {{ product.inventory }}
-        <button @click="addProductToCart(product)">Add to cart</button>
+        <button
+          :disabled="!productIsInStock(product)"
+          @click="addProductToCart(product)"
+        >Add to items</button>
       </li>
     </ul>
   </div>
 </template>
 
 <script>
+import { mapState, mapGetters, mapActions } from 'vuex';
+
 export default {
-  name: 'ProductList',
   data() {
     return {
       loading: false,
+      productIndex: 1,
     };
   },
   computed: {
-    products() {
-      return this.$store.getters.availableProducts;
-    },
+    ...mapState({
+      products: state => state.products.items,
+    }),
+    ...mapGetters({
+      productIsInStock: 'productIsInStock',
+    }),
   },
   methods: {
-    addProductToCart(product) {
-      this.$store.dispatch('addProductToCart', product);
-    },
+    ...mapActions({
+      fetchProducts: 'fetchProducts',
+      addProductToCart: 'addProductToCart',
+    }),
   },
   created() {
     this.loading = true;
-    this.$store.dispatch('fetchProducts')
+    this.fetchProducts()
       .then(() => this.loading = false);
   },
 };
