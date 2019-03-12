@@ -3,14 +3,15 @@
     <h1>Product List</h1>
     <img
       v-if="loading"
-      src="https://i.imgur.com/JfPpwOA.gif">
+      src="https://i.imgur.com/JfPpwOA.gif"
+    >
     <ul v-else>
-      <li v-for="product in items">
-        {{ product.title }} - {{ product.price | currency }} - {{ product.inventory }}
+      <li v-for="product in products">
+        {{product.title}} - {{product.price | currency}} - {{product.inventory}}
         <button
           :disabled="!productIsInStock(product)"
           @click="addProductToCart(product)"
-        >Add to items</button>
+        >Add to cart</button>
       </li>
     </ul>
   </div>
@@ -30,14 +31,14 @@ export default {
     ...mapState({
       products: state => state.products.items,
     }),
-    ...mapGetters({
+    ...mapGetters('products', {
       productIsInStock: 'productIsInStock',
     }),
   },
   methods: {
     ...mapActions({
-      fetchProducts: 'fetchProducts',
-      addProductToCart: 'addProductToCart',
+      fetchProducts: 'products/fetchProducts',
+      addProductToCart: 'cart/addProductToCart',
     }),
   },
   created() {
@@ -49,5 +50,4 @@ export default {
 </script>
 
 <style scoped>
-
 </style>
